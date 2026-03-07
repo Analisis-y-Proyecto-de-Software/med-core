@@ -1,0 +1,100 @@
+# Project Context – Backend
+
+## Description
+
+This repository contains the backend API of the application.
+
+The backend is built using Node.js and Express.
+
+The server exposes REST endpoints consumed by the frontend.
+
+The backend is deployed on Render.
+
+The database is hosted on Supabase (PostgreSQL).
+
+## Technologies
+
+Node.js
+Express.js
+Supabase
+PostgreSQL
+
+## Project Architecture
+
+The backend follows a simple architecture based on separation of responsibilities.
+
+controllers
+routes
+services
+
+The project also includes main files for server configuration.
+
+## Project Structure
+
+controllers
+
+Contains the logic that handles HTTP requests.
+
+Each controller processes the request and returns a response.
+
+routes
+
+Defines API endpoints and connects routes to controllers.
+
+services
+
+Contains connections to external services, mainly the Supabase database.
+
+It may also include data access logic.
+
+## Main Files
+
+app.js
+
+Configures Express, middlewares, and route registration.
+
+server.js
+
+Starts the server and defines the execution port.
+
+## Request Flow
+
+Client
+→ Route
+→ Controller
+→ Service
+→ Database
+→ Response
+
+## Architecture Rules
+
+Routes should only define endpoints.
+
+Controllers should handle HTTP requests.
+
+Database access must be performed from services.
+
+Database logic should not be placed directly inside controllers.
+
+## Environment Variables
+
+Environment variables define:
+
+* server port
+* Supabase credentials
+* configuration keys
+
+Example:
+
+PORT
+SUPABASE_URL
+SUPABASE_KEY
+
+## Notes for AI Assistants
+
+When generating code for this project:
+
+* Respect the controllers / routes / services architecture.
+* Do not introduce additional frameworks.
+* Keep controllers simple.
+* Centralize data access in services.
