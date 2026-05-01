@@ -1,9 +1,19 @@
 const healthService = require("../services/healthService");
+const { testConnection } = require("../services/postgresClient");
 
-const getHelloWorld = (_req, res) => {
-  return res.status(200).json({
-    message: "Hola mundo",
-  });
+const getHelloWorld = async (_req, res) => {
+  const result = await testConnection();
+
+  if (result.success) {
+    return res.status(200).json({
+      message: "conexion correcta",
+    });
+  } else {
+    return res.status(500).json({
+      message: "Error en la conexion",
+      error: result.error,
+    });
+  }
 };
 
 const getHealth = async (_req, res) => {

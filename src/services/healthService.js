@@ -1,4 +1,4 @@
-const { supabase } = require("./supabaseClient");
+const { testConnection } = require("./postgresClient");
 
 const getHealthStatus = async () => {
   const response = {
@@ -7,16 +7,12 @@ const getHealthStatus = async () => {
     database: "not_configured",
   };
 
-  if (!supabase) {
-    return response;
-  }
+  const result = await testConnection();
 
-  const { error } = await supabase.auth.getSession();
+  response.database = result.success ? "connected" : "error";
 
-  response.database = error ? "error" : "connected";
-
-  if (error) {
-    response.databaseError = error.message;
+  if (!result.success) {
+    response.databaseError = result.error;
   }
 
   return response;
