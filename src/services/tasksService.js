@@ -43,6 +43,7 @@ const createTask = async ({
   dueDate,
   estimatedTimeHours,
   attachmentLink,
+  priority,
 }) => {
   const query = `
     INSERT INTO tasks (
@@ -51,9 +52,10 @@ const createTask = async ({
       description,
       due_date,
       estimated_time_hours,
-      attachment_link
+      attachment_link,
+      priority
     )
-    VALUES ($1, $2, $3, $4, $5, $6)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING
       id,
       user_id,
@@ -76,6 +78,7 @@ const createTask = async ({
     normalizeValue(dueDate),
     normalizeValue(estimatedTimeHours),
     normalizeValue(attachmentLink),
+    normalizeValue(priority),
   ];
 
   const result = await pool.query(query, values);

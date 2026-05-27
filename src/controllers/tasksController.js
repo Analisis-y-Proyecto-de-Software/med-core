@@ -38,6 +38,11 @@ const create = async (req, res) => {
       body.linkAdjunto ||
       body.link_adjunto ||
       null;
+    const priority =
+      body.priority ||
+      body.prioridad ||
+      body.prioridadTarea ||
+      null;
 
     if (!userId || !name) {
       return res.status(400).json({
@@ -52,6 +57,7 @@ const create = async (req, res) => {
       dueDate,
       estimatedTimeHours,
       attachmentLink,
+      priority,
     });
 
     return res.status(201).json(task);
