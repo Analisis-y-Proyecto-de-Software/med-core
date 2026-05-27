@@ -5,5 +5,6 @@ const { cognitoAuth } = require("../middlewares/cognitoAuth");
 const router = express.Router();
 
 router.get("/tasks/:userId/list", cognitoAuth, tasksController.listByUser);
+router.post("/tasks/:userId/create", cognitoAuth, tasksController.create);
 
 module.exports = router;
