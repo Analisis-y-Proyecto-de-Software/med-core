@@ -109,8 +109,32 @@ const updateTaskStatus = async ({ taskId, status }) => {
   return result.rows[0];
 };
 
+const deleteTask = async (taskId) => {
+  const query = `
+    DELETE FROM tasks
+    WHERE id = $1
+    RETURNING
+      id,
+      user_id,
+      name,
+      status,
+      description,
+      due_date,
+      estimated_time_hours,
+      priority,
+      attachment_link,
+      developed_time_hours,
+      created_at,
+      updated_at;
+  `;
+
+  const result = await pool.query(query, [taskId]);
+  return result.rows[0];
+};
+
 module.exports = {
   listTasksByUser,
   createTask,
   updateTaskStatus,
+  deleteTask,
 };

@@ -7,5 +7,6 @@ const router = express.Router();
 router.get("/tasks/:userId/list", cognitoAuth, tasksController.listByUser);
 router.post("/tasks/:userId/create", cognitoAuth, tasksController.create);
 router.patch("/tasks/:taskId/status", cognitoAuth, tasksController.updateStatus);
+router.delete("/tasks/:taskId", cognitoAuth, tasksController.remove);
 
 module.exports = router;
