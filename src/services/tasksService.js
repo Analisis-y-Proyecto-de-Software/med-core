@@ -43,6 +43,7 @@ const createTask = async ({
   dueDate,
   estimatedTimeHours,
   attachmentLink,
+  priority,
 }) => {
   const query = `
     INSERT INTO tasks (
@@ -51,9 +52,10 @@ const createTask = async ({
       description,
       due_date,
       estimated_time_hours,
-      attachment_link
+      attachment_link,
+      priority
     )
-    VALUES ($1, $2, $3, $4, $5, $6)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING
       id,
       user_id,
@@ -76,13 +78,39 @@ const createTask = async ({
     normalizeValue(dueDate),
     normalizeValue(estimatedTimeHours),
     normalizeValue(attachmentLink),
+    normalizeValue(priority),
   ];
 
   const result = await pool.query(query, values);
   return result.rows[0];
 };
 
+const updateTaskStatus = async ({ taskId, status }) => {
+  const query = `
+    UPDATE tasks
+    SET status = $1, updated_at = NOW()
+    WHERE id = $2
+    RETURNING
+      id,
+      user_id,
+      name,
+      status,
+      description,
+      due_date,
+      estimated_time_hours,
+      priority,
+      attachment_link,
+      developed_time_hours,
+      created_at,
+      updated_at;
+  `;
+
+  const result = await pool.query(query, [status, taskId]);
+  return result.rows[0];
+};
+
 module.exports = {
   listTasksByUser,
   createTask,
+  updateTaskStatus,
 };

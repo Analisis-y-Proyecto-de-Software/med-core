@@ -38,6 +38,11 @@ const create = async (req, res) => {
       body.linkAdjunto ||
       body.link_adjunto ||
       null;
+    const priority =
+      body.priority ||
+      body.prioridad ||
+      body.prioridadTarea ||
+      null;
 
     if (!userId || !name) {
       return res.status(400).json({
@@ -52,6 +57,7 @@ const create = async (req, res) => {
       dueDate,
       estimatedTimeHours,
       attachmentLink,
+      priority,
     });
 
     return res.status(201).json(task);
@@ -63,7 +69,53 @@ const create = async (req, res) => {
   }
 };
 
+const updateStatus = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const body = req.body || {};
+
+    const status =
+      body.status ||
+      body.estado ||
+      body.estadoTarea ||
+      null;
+
+    const allowedStatuses = ["pending", "in_progress", "done"];
+
+    if (!taskId || !status) {
+      return res.status(400).json({
+        message: "Faltan datos requeridos: taskId y status",
+      });
+    }
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        message: "Estado invalido. Usa pending, in_progress o done",
+      });
+    }
+
+    const task = await tasksService.updateTaskStatus({
+      taskId,
+      status,
+    });
+
+    if (!task) {
+      return res.status(404).json({
+        message: "Tarea no encontrada",
+      });
+    }
+
+    return res.status(200).json(task);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error al actualizar estado",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   listByUser,
   create,
+  updateStatus,
 };
