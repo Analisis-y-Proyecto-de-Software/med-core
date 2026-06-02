@@ -1,5 +1,21 @@
 const tasksService = require("../services/tasksService");
 
+const buildRecommendation = ({ tasksScheduled, tasksDone, tasksPending }) => {
+  if (!tasksScheduled) {
+    return "No tienes tareas programadas hoy. Aprovecha para planificar o descansar.";
+  }
+
+  if (!tasksPending) {
+    return "Buen trabajo, ya completaste todas tus tareas de hoy.";
+  }
+
+  if (tasksPending >= 5 || tasksPending / tasksScheduled >= 0.7) {
+    return "Tienes una carga alta hoy. Toma pausas activas y prioriza tus tareas.";
+  }
+
+  return "Vas bien. Mantente enfocado y avanza paso a paso.";
+};
+
 const listByUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -144,9 +160,48 @@ const remove = async (req, res) => {
   }
 };
 
+const getDailySummary = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const query = req.query || {};
+    const date = query.date || null;
+
+    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({
+        message: "Fecha invalida. Usa YYYY-MM-DD",
+      });
+    }
+
+    const summary = await tasksService.getDailySummaryByUser({
+      userId,
+      date,
+    });
+
+    const recommendation = buildRecommendation({
+      tasksScheduled: summary.tasks_scheduled,
+      tasksDone: summary.tasks_done,
+      tasksPending: summary.tasks_pending,
+    });
+
+    return res.status(200).json({
+      date: summary.date,
+      tasksScheduled: summary.tasks_scheduled,
+      tasksDone: summary.tasks_done,
+      tasksPending: summary.tasks_pending,
+      recommendation,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error al obtener resumen del dia",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   listByUser,
   create,
   updateStatus,
   remove,
+  getDailySummary,
 };
