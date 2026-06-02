@@ -63,16 +63,16 @@ const getMonthlySummaryByUser = async ({ userId, month, year }) => {
       )::date AS day
     ),
     latest_emotional AS (
-      SELECT DISTINCT ON (DATE(er.created_at))
+      SELECT
         DATE(er.created_at) AS day,
-        es.name AS emotional_state
+        ARRAY_AGG(es.name ORDER BY er.created_at DESC) AS emotional_states
       FROM emotional_records er
       JOIN emotional_states es
         ON er.emotional_state_id = es.id
       WHERE er.user_id = $1
         AND er.created_at >= make_date($2, $3, 1)
         AND er.created_at < (make_date($2, $3, 1) + INTERVAL '1 month')
-      ORDER BY DATE(er.created_at), er.created_at DESC
+      GROUP BY DATE(er.created_at)
     ),
     tasks_due AS (
       SELECT DATE(t.due_date) AS day, COUNT(*)::int AS tasks_due_count
@@ -84,7 +84,7 @@ const getMonthlySummaryByUser = async ({ userId, month, year }) => {
     )
     SELECT
       to_char(d.day, 'YYYY-MM-DD') AS date,
-      le.emotional_state AS emotional_state,
+      COALESCE(le.emotional_states, ARRAY[]::text[]) AS emotional_states,
       COALESCE(td.tasks_due_count, 0) AS tasks_due_count
     FROM days d
     LEFT JOIN latest_emotional le ON le.day = d.day
