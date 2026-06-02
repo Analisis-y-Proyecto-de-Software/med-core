@@ -132,9 +132,26 @@ const deleteTask = async (taskId) => {
   return result.rows[0];
 };
 
+const getDailySummaryByUser = async ({ userId, date }) => {
+  const query = `
+    SELECT
+      to_char(COALESCE($2::date, CURRENT_DATE), 'YYYY-MM-DD') AS date,
+      COUNT(*)::int AS tasks_scheduled,
+      COUNT(*) FILTER (WHERE status = 'done')::int AS tasks_done,
+      COUNT(*) FILTER (WHERE status IN ('pending', 'in_progress'))::int AS tasks_pending
+    FROM tasks
+    WHERE user_id = $1
+      AND DATE(due_date) = COALESCE($2::date, CURRENT_DATE);
+  `;
+
+  const result = await pool.query(query, [userId, date]);
+  return result.rows[0];
+};
+
 module.exports = {
   listTasksByUser,
   createTask,
   updateTaskStatus,
   deleteTask,
+  getDailySummaryByUser,
 };
