@@ -3,7 +3,8 @@ const emotionalRecordsService = require("../services/emotionalRecordsService");
 const listByUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    const records = await emotionalRecordsService.listEmotionalRecordsByUser(userId);
+    const { date } = req.query;
+    const records = await emotionalRecordsService.listEmotionalRecordsByUser(userId, date);
 
     return res.status(200).json(records);
   } catch (error) {

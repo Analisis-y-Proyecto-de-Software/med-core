@@ -1,7 +1,7 @@
 const { pool } = require("./postgresClient");
 
-const listEmotionalRecordsByUser = async (userId) => {
-  const query = `
+const listEmotionalRecordsByUser = async (userId, date) => {
+  let query = `
     SELECT
       emotional_records.id,
       emotional_records.user_id,
@@ -12,10 +12,18 @@ const listEmotionalRecordsByUser = async (userId) => {
     JOIN emotional_states
       ON emotional_records.emotional_state_id = emotional_states.id
     WHERE emotional_records.user_id = $1
-    ORDER BY emotional_records.created_at DESC;
-  `;
+`;
 
-  const result = await pool.query(query, [userId]);
+  const params = [userId];
+
+  if (date) {
+    query += `      AND emotional_records.created_at::date = $2\n`;
+    params.push(date);
+  }
+
+  query += `    ORDER BY emotional_records.created_at DESC;\n  `;
+
+  const result = await pool.query(query, params);
   return result.rows;
 };
 
