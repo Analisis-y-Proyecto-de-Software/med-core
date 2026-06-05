@@ -3,8 +3,21 @@ const emotionalRecordsService = require("../services/emotionalRecordsService");
 const listByUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { date } = req.query;
-    const records = await emotionalRecordsService.listEmotionalRecordsByUser(userId, date);
+    const { date, stateId } = req.query;
+    const dateFilter = date || null;
+    const stateIdFilter = stateId != null && stateId !== "" ? Number(stateId) : null;
+
+    if (stateId != null && stateId !== "" && Number.isNaN(stateIdFilter)) {
+      return res.status(400).json({
+        message: "stateId debe ser un número válido cuando se provee",
+      });
+    }
+
+    const records = await emotionalRecordsService.listEmotionalRecordsByUser(
+      userId,
+      dateFilter,
+      stateIdFilter
+    );
 
     return res.status(200).json(records);
   } catch (error) {
