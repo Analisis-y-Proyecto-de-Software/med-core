@@ -29,6 +29,12 @@ router.post(
 );
 
 router.get(
+  "/cognitive-load/:userId",
+  cognitoAuth,
+  emotionalRecordsController.getMonthlyCognitiveLoadByUser
+);
+
+router.get(
   "/:month/:userId",
   ensureValidMonth,
   cognitoAuth,

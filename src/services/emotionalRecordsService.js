@@ -147,4 +147,5 @@ module.exports = {
   listEmotionalRecordsByUser,
   createEmotionalRecord,
   getMonthlySummaryByUser,
+  getMonthlyCognitiveLoadByUser,
 };
