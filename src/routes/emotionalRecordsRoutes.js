@@ -5,47 +5,34 @@ const { cognitoAuth } = require("../middlewares/cognitoAuth");
 const router = express.Router();
 
 const validMonths = new Set([
-	"enero",
-	"febrero",
-	"marzo",
-	"abril",
-	"mayo",
-	"junio",
-	"julio",
-	"agosto",
-	"septiembre",
-	"setiembre",
-	"octubre",
-	"noviembre",
-	"diciembre",
+  "enero", "febrero", "marzo", "abril", "mayo", "junio",
+  "julio", "agosto", "septiembre", "setiembre", "octubre",
+  "noviembre", "diciembre",
 ]);
 
 const ensureValidMonth = (req, _res, next) => {
-	const month = String(req.params.month || "").trim().toLowerCase();
-	if (!validMonths.has(month)) {
-		return next("route");
-	}
-
-	return next();
+  const month = String(req.params.month || "").trim().toLowerCase();
+  if (!validMonths.has(month)) return next("route");
+  return next();
 };
 
 router.get(
-	"/emotionalrecords/:userId/list",
-	cognitoAuth,
-	emotionalRecordsController.listByUser
+  "/emotionalrecords/:userId/list",
+  cognitoAuth,
+  emotionalRecordsController.listByUser
+);
+
+router.post(
+  "/emotionalrecords/:userId/create",
+  cognitoAuth,
+  emotionalRecordsController.createForUser
 );
 
 router.get(
-	"/cognitive-load/:userId",
-	cognitoAuth,
-	emotionalRecordsController.getMonthlyCognitiveLoadByUser
-);
-
-router.get(
-	"/:month/:userId",
-	ensureValidMonth,
-	cognitoAuth,
-	emotionalRecordsController.getMonthlySummaryByUser
+  "/:month/:userId",
+  ensureValidMonth,
+  cognitoAuth,
+  emotionalRecordsController.getMonthlySummaryByUser
 );
 
 module.exports = router;
