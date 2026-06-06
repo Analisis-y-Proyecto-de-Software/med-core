@@ -14,7 +14,6 @@ app.use(express.json());
 app.get("/", healthController.getHelloWorld);
 
 app.use("/api", healthRoutes);
-//app.use("/", emotionalRecordsRoutes);
 app.use("/api", emotionalRecordsRoutes);
 app.use("/", emotionalRecordsRoutes);
 app.use("/", tasksRoutes);

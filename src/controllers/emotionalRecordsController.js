@@ -61,7 +61,34 @@ const createForUser = async (req, res) => {
   }
 };
 
+const getMonthlySummaryByUser = async (req, res) => {
+  try {
+    const { userId, month } = req.params;
+    const { year } = req.query;
+
+    if (!year || !/^\d{4}$/.test(year)) {
+      return res.status(400).json({
+        message: "Se requiere un año válido como query param: ?year=YYYY",
+      });
+    }
+
+    const summary = await emotionalRecordsService.getMonthlySummaryByUser({
+      userId,
+      month,
+      year,
+    });
+
+    return res.status(200).json(summary);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error al obtener resumen mensual",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   listByUser,
   createForUser,
+  getMonthlySummaryByUser,
 };

@@ -146,4 +146,5 @@ const getMonthlyCognitiveLoadByUser = async ({ userId, month, year }) => {
 module.exports = {
   listEmotionalRecordsByUser,
   createEmotionalRecord,
+  getMonthlySummaryByUser,
 };
