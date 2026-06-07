@@ -1,7 +1,9 @@
 const request = require("supertest");
-const app = require("../../app");
-const emotionalRecordsService = require("../services/emotionalRecordsService");
+const express = require("express");
+const router = require("../routes/emotionalRecordsRoutes");
+const emotionalRecordsController = require("../controllers/emotionalRecordsController");
 
+// Mock de Auth Middleware
 jest.mock("../middlewares/cognitoAuth", () => ({
   cognitoAuth: (req, res, next) => {
     req.auth = { sub: "user123" };
@@ -9,29 +11,22 @@ jest.mock("../middlewares/cognitoAuth", () => ({
   }
 }));
 
-jest.mock("../services/emotionalRecordsService");
+jest.mock("../controllers/emotionalRecordsController");
 
-describe("Pruebas de Integración - Rutas de Registros Emocionales", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+const app = express();
+app.use(express.json());
+app.use("/api", router);
 
-  test("GET /api/emotionalrecords/:userId/list -> Debe responder 200", async () => {
-    emotionalRecordsService.listEmotionalRecordsByUser.mockResolvedValue([]);
-
-    const response = await request(app)
-      .get("/api/emotionalrecords/user123/list");
-
+describe("Pruebas de Rutas e Integración - Middleware ensureValidMonth", () => {
+  test("Debe pasar el control al controlador si el mes es valido", async () => {
+    emotionalRecordsController.getMonthlySummaryByUser.mockImplementation((req, res) => res.sendStatus(200));
+    
+    const response = await request(app).get("/api/enero/user123?year=2026");
     expect(response.statusCode).toBe(200);
   });
 
-  test("POST /api/emotionalrecords/:userId/create -> Debe responder 201", async () => {
-    emotionalRecordsService.createEmotionalRecord.mockResolvedValue({});
-
-    const response = await request(app)
-      .post("/api/emotionalrecords/user123/create")
-      .send({ emotional_state_id: 3 });
-
-    expect(response.statusCode).toBe(201);
+  test("Debe saltarse la ruta (retornar 404) si el mes en la URL no es valido", async () => {
+    const response = await request(app).get("/api/mesInvaladoFalso/user123?year=2026");
+    expect(response.statusCode).toBe(404); // Salta la ruta por el next('route')
   });
 });

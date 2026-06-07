@@ -14,7 +14,8 @@
     "coverageDirectory": "coverage",
     "collectCoverageFrom": [
       "src/controllers/**/*.js",
-      "src/services/**/*.js"
+      "src/services/**/*.js",
+      "src/routes/**/*.js"
     ]
   },
   "keywords": [],
