@@ -61,7 +61,59 @@ const createForUser = async (req, res) => {
   }
 };
 
+const getMonthlySummaryByUser = async (req, res) => {
+  try {
+    const { userId, month } = req.params;
+    const { year } = req.query;
+
+    if (!year || !/^\d{4}$/.test(year)) {
+      return res.status(400).json({
+        message: "Se requiere un año válido como query param: ?year=YYYY",
+      });
+    }
+
+    const summary = await emotionalRecordsService.getMonthlySummaryByUser({
+      userId,
+      month,
+      year,
+    });
+
+    return res.status(200).json(summary);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error al obtener resumen mensual",
+      error: error.message,
+    });
+  }
+};
+
+const getMonthlyCognitiveLoadByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { month, year } = req.query;
+
+    if (!month) {
+      return res.status(400).json({ message: "Se requiere el query param: month" });
+    }
+
+    if (!year || !/^\d{4}$/.test(year)) {
+      return res.status(400).json({ message: "Se requiere un año válido como query param: ?year=YYYY" });
+    }
+
+    const data = await emotionalRecordsService.getMonthlyCognitiveLoadByUser({ userId, month, year });
+
+    return res.status(200).json(data);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error al obtener carga cognitiva mensual",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   listByUser,
   createForUser,
+  getMonthlySummaryByUser,
+  getMonthlyCognitiveLoadByUser,
 };
